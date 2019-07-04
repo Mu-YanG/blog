@@ -1,0 +1,59 @@
+buildscript {
+    repositories {
+        maven { // The google mirror is less flaky than mavenCentral()
+            url "https://maven-central.storage-download.googleapis.com/repos/central/data/" }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.1'
+    }
+}
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+protobuf {
+     generatedFilesBaseDir = "$projectDir/proto_create"
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.7.1'
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.22.0"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {
+                // To generate deprecated interfaces and static bindService method,
+                // turn the enable_deprecated option to true below:
+                option 'enable_deprecated=false'
+            }
+        }
+    }
+}
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+    }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public'}
+    maven { url 'https://repo.spring.io/libs-milestone'}
+    maven {url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven {url "https://maven-central.storage-download.googleapis.com/repos/central/data/" }
+    mavenLocal()
+    mavenCentral()
+}
+dependencies {
+    compile group: 'io.grpc', name: 'grpc-protobuf', version: '1.22.0'
+    compile group: 'io.grpc', name: 'grpc-stub', version: '1.22.0'
+    compile group: 'io.grpc', name: 'grpc-netty-shaded', version: '1.22.0'
+    compile group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.7.1'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.7.1'
+}
